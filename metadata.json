@@ -1,0 +1,6 @@
+{
+  "name": "Nakreezay Shadi Hall & Banquet",
+  "description": "Luxury wedding banquet complex on Qamber Bypass Road, Mingora, Swat Valley — separate gents and ladies halls, bespoke floral stages, authentic Swati catering, and online booking.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

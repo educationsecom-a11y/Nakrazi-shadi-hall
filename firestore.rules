@@ -1,0 +1,338 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global default-deny safety net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isEmailVerified() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function isBootstrappedAdmin() {
+      return isEmailVerified() && request.auth.token.email == 'educationsecom@gmail.com';
+    }
+
+    function isAdmin() {
+      return isBootstrappedAdmin() || (
+        isEmailVerified() &&
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    function isValidSiteConfig(data) {
+      return data.keys().hasAll([
+          'heroImageUrl', 'stageImageUrl', 'cateringImageUrl', 'avImageUrl',
+          'baseVenuePerHead', 'phoneDisplay', 'phoneRaw', 'whatsappNumber',
+          'email', 'addressEn', 'addressUr', 'visitingHoursEn', 'visitingHoursUr',
+          'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'heroImageUrl', 'stageImageUrl', 'cateringImageUrl', 'avImageUrl',
+          'baseVenuePerHead', 'phoneDisplay', 'phoneRaw', 'whatsappNumber',
+          'email', 'addressEn', 'addressUr', 'visitingHoursEn', 'visitingHoursUr',
+          'fridayNoteEn', 'fridayNoteUr', 'heroHeadlineEn', 'heroHeadlineUr',
+          'heroSubheadlineEn', 'heroSubheadlineUr', 'updatedAt'
+        ])
+        && data.heroImageUrl is string && data.heroImageUrl.size() <= 350000
+        && data.stageImageUrl is string && data.stageImageUrl.size() <= 350000
+        && data.cateringImageUrl is string && data.cateringImageUrl.size() <= 350000
+        && data.avImageUrl is string && data.avImageUrl.size() <= 350000
+        && data.baseVenuePerHead is number && data.baseVenuePerHead >= 0 && data.baseVenuePerHead <= 50000
+        && data.phoneDisplay is string && data.phoneDisplay.size() <= 40
+        && data.phoneRaw is string && data.phoneRaw.size() <= 30
+        && data.whatsappNumber is string && data.whatsappNumber.size() <= 30
+        && data.email is string && data.email.size() <= 120
+        && data.addressEn is string && data.addressEn.size() <= 300
+        && data.addressUr is string && data.addressUr.size() <= 300
+        && data.visitingHoursEn is string && data.visitingHoursEn.size() <= 120
+        && data.visitingHoursUr is string && data.visitingHoursUr.size() <= 120
+        && (!('fridayNoteEn' in data) || (data.fridayNoteEn is string && data.fridayNoteEn.size() <= 160))
+        && (!('fridayNoteUr' in data) || (data.fridayNoteUr is string && data.fridayNoteUr.size() <= 160))
+        && (!('heroHeadlineEn' in data) || (data.heroHeadlineEn is string && data.heroHeadlineEn.size() <= 200))
+        && (!('heroHeadlineUr' in data) || (data.heroHeadlineUr is string && data.heroHeadlineUr.size() <= 200))
+        && (!('heroSubheadlineEn' in data) || (data.heroSubheadlineEn is string && data.heroSubheadlineEn.size() <= 400))
+        && (!('heroSubheadlineUr' in data) || (data.heroSubheadlineUr is string && data.heroSubheadlineUr.size() <= 400))
+        && data.updatedAt == request.time;
+    }
+
+    function isValidPackage(data) {
+      return data.keys().hasAll([
+          'nameEn', 'nameUr', 'tierLabelEn', 'tierLabelUr', 'pricePerHead',
+          'hallFeeNoteEn', 'hallFeeNoteUr', 'descriptionEn', 'descriptionUr',
+          'highlighted', 'sortOrder', 'featuresEn', 'featuresUr', 'presetDishIds', 'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'nameEn', 'nameUr', 'tierLabelEn', 'tierLabelUr', 'badgeEn', 'badgeUr',
+          'pricePerHead', 'hallFeeNoteEn', 'hallFeeNoteUr', 'descriptionEn', 'descriptionUr',
+          'highlighted', 'sortOrder', 'featuresEn', 'featuresUr', 'presetDishIds', 'updatedAt'
+        ])
+        && data.nameEn is string && data.nameEn.size() >= 1 && data.nameEn.size() <= 100
+        && data.nameUr is string && data.nameUr.size() >= 1 && data.nameUr.size() <= 120
+        && data.tierLabelEn is string && data.tierLabelEn.size() <= 80
+        && data.tierLabelUr is string && data.tierLabelUr.size() <= 100
+        && (!('badgeEn' in data) || (data.badgeEn is string && data.badgeEn.size() <= 60))
+        && (!('badgeUr' in data) || (data.badgeUr is string && data.badgeUr.size() <= 80))
+        && data.pricePerHead is number && data.pricePerHead >= 0 && data.pricePerHead <= 100000
+        && data.hallFeeNoteEn is string && data.hallFeeNoteEn.size() <= 180
+        && data.hallFeeNoteUr is string && data.hallFeeNoteUr.size() <= 200
+        && data.descriptionEn is string && data.descriptionEn.size() <= 400
+        && data.descriptionUr is string && data.descriptionUr.size() <= 450
+        && data.highlighted is bool
+        && data.sortOrder is number && data.sortOrder >= 0 && data.sortOrder <= 100
+        && data.featuresEn is list && data.featuresEn.size() <= 20
+        && (data.featuresEn.size() == 0 || data.featuresEn[0] is string)
+        && data.featuresUr is list && data.featuresUr.size() <= 20
+        && (data.featuresUr.size() == 0 || data.featuresUr[0] is string)
+        && data.presetDishIds is list && data.presetDishIds.size() <= 30
+        && (data.presetDishIds.size() == 0 || data.presetDishIds[0] is string)
+        && data.updatedAt == request.time;
+    }
+
+    function isValidMenuDish(data) {
+      return data.keys().hasAll([
+          'category', 'nameEn', 'nameUr', 'pricePerHead', 'noteEn', 'noteUr', 'sortOrder', 'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'category', 'nameEn', 'nameUr', 'pricePerHead', 'noteEn', 'noteUr', 'sortOrder', 'updatedAt'
+        ])
+        && data.category in ['rice', 'curry', 'bbq', 'sides', 'desserts', 'drinks']
+        && data.nameEn is string && data.nameEn.size() >= 1 && data.nameEn.size() <= 100
+        && data.nameUr is string && data.nameUr.size() >= 1 && data.nameUr.size() <= 120
+        && data.pricePerHead is number && data.pricePerHead >= 0 && data.pricePerHead <= 50000
+        && data.noteEn is string && data.noteEn.size() <= 200
+        && data.noteUr is string && data.noteUr.size() <= 240
+        && data.sortOrder is number && data.sortOrder >= 0 && data.sortOrder <= 200
+        && data.updatedAt == request.time;
+    }
+
+    function isValidGalleryItem(data) {
+      return data.keys().hasAll([
+          'category', 'titleEn', 'titleUr', 'captionEn', 'captionUr', 'imageUrl', 'aspect', 'sortOrder', 'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'category', 'titleEn', 'titleUr', 'captionEn', 'captionUr', 'imageUrl', 'aspect', 'sortOrder', 'updatedAt'
+        ])
+        && data.category in ['Barat Stages', 'Walima Decor', 'Mehndi Nights', 'Dining Setup', 'Exterior & Parking']
+        && data.titleEn is string && data.titleEn.size() >= 1 && data.titleEn.size() <= 120
+        && data.titleUr is string && data.titleUr.size() >= 1 && data.titleUr.size() <= 150
+        && data.captionEn is string && data.captionEn.size() <= 300
+        && data.captionUr is string && data.captionUr.size() <= 350
+        && data.imageUrl is string && data.imageUrl.size() >= 1 && data.imageUrl.size() <= 350000
+        && data.aspect in ['tall', 'wide', 'square']
+        && data.sortOrder is number && data.sortOrder >= 0 && data.sortOrder <= 500
+        && data.updatedAt == request.time;
+    }
+
+    function isValidVenueService(data) {
+      return data.keys().hasAll([
+          'number', 'categoryEn', 'categoryUr', 'titleEn', 'titleUr',
+          'summaryEn', 'summaryUr', 'descriptionEn', 'descriptionUr',
+          'imageUrl', 'featuresEn', 'featuresUr', 'sortOrder', 'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'number', 'categoryEn', 'categoryUr', 'titleEn', 'titleUr',
+          'summaryEn', 'summaryUr', 'descriptionEn', 'descriptionUr',
+          'imageUrl', 'featuresEn', 'featuresUr', 'sortOrder', 'updatedAt'
+        ])
+        && data.number is string && data.number.size() <= 10
+        && data.categoryEn is string && data.categoryEn.size() <= 80
+        && data.categoryUr is string && data.categoryUr.size() <= 100
+        && data.titleEn is string && data.titleEn.size() >= 1 && data.titleEn.size() <= 120
+        && data.titleUr is string && data.titleUr.size() >= 1 && data.titleUr.size() <= 140
+        && data.summaryEn is string && data.summaryEn.size() <= 240
+        && data.summaryUr is string && data.summaryUr.size() <= 280
+        && data.descriptionEn is string && data.descriptionEn.size() <= 600
+        && data.descriptionUr is string && data.descriptionUr.size() <= 700
+        && data.imageUrl is string && data.imageUrl.size() >= 1 && data.imageUrl.size() <= 350000
+        && data.featuresEn is list && data.featuresEn.size() <= 10
+        && (data.featuresEn.size() == 0 || data.featuresEn[0] is string)
+        && data.featuresUr is list && data.featuresUr.size() <= 10
+        && (data.featuresUr.size() == 0 || data.featuresUr[0] is string)
+        && data.sortOrder is number && data.sortOrder >= 0 && data.sortOrder <= 100
+        && data.updatedAt == request.time;
+    }
+
+    function isValidHallSpec(data) {
+      return data.keys().hasAll([
+          'nameEn', 'nameUr', 'areaSqFt', 'banquetCapacity', 'theaterCapacity',
+          'bridalRoomEn', 'bridalRoomUr', 'climateControlEn', 'climateControlUr',
+          'notesEn', 'notesUr', 'sortOrder', 'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'nameEn', 'nameUr', 'areaSqFt', 'banquetCapacity', 'theaterCapacity',
+          'bridalRoomEn', 'bridalRoomUr', 'climateControlEn', 'climateControlUr',
+          'notesEn', 'notesUr', 'sortOrder', 'updatedAt'
+        ])
+        && data.nameEn is string && data.nameEn.size() >= 1 && data.nameEn.size() <= 120
+        && data.nameUr is string && data.nameUr.size() >= 1 && data.nameUr.size() <= 140
+        && data.areaSqFt is string && data.areaSqFt.size() <= 40
+        && data.banquetCapacity is string && data.banquetCapacity.size() <= 40
+        && data.theaterCapacity is string && data.theaterCapacity.size() <= 40
+        && data.bridalRoomEn is string && data.bridalRoomEn.size() <= 120
+        && data.bridalRoomUr is string && data.bridalRoomUr.size() <= 140
+        && data.climateControlEn is string && data.climateControlEn.size() <= 120
+        && data.climateControlUr is string && data.climateControlUr.size() <= 140
+        && data.notesEn is string && data.notesEn.size() <= 160
+        && data.notesUr is string && data.notesUr.size() <= 180
+        && data.sortOrder is number && data.sortOrder >= 0 && data.sortOrder <= 50
+        && data.updatedAt == request.time;
+    }
+
+    function isValidTestimonial(data) {
+      return data.keys().hasAll([
+          'initials', 'name', 'locationEventEn', 'locationEventUr',
+          'quoteEn', 'quoteUr', 'sortOrder', 'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'initials', 'name', 'locationEventEn', 'locationEventUr',
+          'quoteEn', 'quoteUr', 'sortOrder', 'updatedAt'
+        ])
+        && data.initials is string && data.initials.size() >= 1 && data.initials.size() <= 6
+        && data.name is string && data.name.size() >= 1 && data.name.size() <= 100
+        && data.locationEventEn is string && data.locationEventEn.size() <= 120
+        && data.locationEventUr is string && data.locationEventUr.size() <= 140
+        && data.quoteEn is string && data.quoteEn.size() >= 1 && data.quoteEn.size() <= 600
+        && data.quoteUr is string && data.quoteUr.size() >= 1 && data.quoteUr.size() <= 700
+        && data.sortOrder is number && data.sortOrder >= 0 && data.sortOrder <= 100
+        && data.updatedAt == request.time;
+    }
+
+    function isValidFaq(data) {
+      return data.keys().hasAll([
+          'questionEn', 'questionUr', 'answerEn', 'answerUr', 'sortOrder', 'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'questionEn', 'questionUr', 'answerEn', 'answerUr', 'sortOrder', 'updatedAt'
+        ])
+        && data.questionEn is string && data.questionEn.size() >= 1 && data.questionEn.size() <= 240
+        && data.questionUr is string && data.questionUr.size() >= 1 && data.questionUr.size() <= 280
+        && data.answerEn is string && data.answerEn.size() >= 1 && data.answerEn.size() <= 700
+        && data.answerUr is string && data.answerUr.size() >= 1 && data.answerUr.size() <= 800
+        && data.sortOrder is number && data.sortOrder >= 0 && data.sortOrder <= 100
+        && data.updatedAt == request.time;
+    }
+
+    function isValidInquiry(data) {
+      return data.keys().hasAll([
+          'fullName', 'phone', 'eventDate', 'eventShift', 'eventType',
+          'gentsCount', 'ladiesCount', 'catering', 'status', 'createdAt'
+        ])
+        && data.keys().hasOnly([
+          'fullName', 'phone', 'eventDate', 'eventShift', 'eventType',
+          'gentsCount', 'ladiesCount', 'catering', 'notes', 'status', 'createdAt'
+        ])
+        && data.fullName is string && data.fullName.size() >= 2 && data.fullName.size() <= 120
+        && data.phone is string && data.phone.size() >= 7 && data.phone.size() <= 40
+        && data.eventDate is string && data.eventDate.size() >= 4 && data.eventDate.size() <= 20
+        && data.eventShift in ['Day Lunch', 'Night Dinner']
+        && data.eventType is string && data.eventType.size() >= 2 && data.eventType.size() <= 40
+        && data.gentsCount is number && data.gentsCount >= 0 && data.gentsCount <= 3000
+        && data.ladiesCount is number && data.ladiesCount >= 0 && data.ladiesCount <= 3000
+        && data.catering in ['Yes - Per Head', 'No - Hall Only']
+        && (!('notes' in data) || (data.notes is string && data.notes.size() <= 1000))
+        && data.status in ['pending', 'confirmed', 'completed', 'cancelled']
+        && data.createdAt is timestamp;
+    }
+
+    match /siteConfig/{configId} {
+      allow get: if isValidId(configId);
+      allow list: if true;
+      allow create, update: if isValidId(configId) && isAdmin() && isValidSiteConfig(incoming());
+      allow delete: if isValidId(configId) && isAdmin();
+    }
+
+    match /packages/{packageId} {
+      allow get: if isValidId(packageId);
+      allow list: if true;
+      allow create, update: if isValidId(packageId) && isAdmin() && isValidPackage(incoming());
+      allow delete: if isValidId(packageId) && isAdmin();
+    }
+
+    match /menuDishes/{dishId} {
+      allow get: if isValidId(dishId);
+      allow list: if true;
+      allow create, update: if isValidId(dishId) && isAdmin() && isValidMenuDish(incoming());
+      allow delete: if isValidId(dishId) && isAdmin();
+    }
+
+    match /galleryItems/{itemId} {
+      allow get: if isValidId(itemId);
+      allow list: if true;
+      allow create, update: if isValidId(itemId) && isAdmin() && isValidGalleryItem(incoming());
+      allow delete: if isValidId(itemId) && isAdmin();
+    }
+
+    match /services/{serviceId} {
+      allow get: if isValidId(serviceId);
+      allow list: if true;
+      allow create, update: if isValidId(serviceId) && isAdmin() && isValidVenueService(incoming());
+      allow delete: if isValidId(serviceId) && isAdmin();
+    }
+
+    match /hallSpecs/{hallId} {
+      allow get: if isValidId(hallId);
+      allow list: if true;
+      allow create, update: if isValidId(hallId) && isAdmin() && isValidHallSpec(incoming());
+      allow delete: if isValidId(hallId) && isAdmin();
+    }
+
+    match /testimonials/{testimonialId} {
+      allow get: if isValidId(testimonialId);
+      allow list: if true;
+      allow create, update: if isValidId(testimonialId) && isAdmin() && isValidTestimonial(incoming());
+      allow delete: if isValidId(testimonialId) && isAdmin();
+    }
+
+    match /faqs/{faqId} {
+      allow get: if isValidId(faqId);
+      allow list: if true;
+      allow create, update: if isValidId(faqId) && isAdmin() && isValidFaq(incoming());
+      allow delete: if isValidId(faqId) && isAdmin();
+    }
+
+    match /inquiries/{inquiryId} {
+      allow get: if isValidId(inquiryId) && isAdmin();
+      allow list: if isAdmin();
+      allow create: if isValidId(inquiryId)
+        && isValidInquiry(incoming())
+        && incoming().status == 'pending'
+        && incoming().createdAt == request.time;
+      allow update: if isValidId(inquiryId)
+        && isAdmin()
+        && isValidInquiry(incoming())
+        && incoming().createdAt == existing().createdAt
+        && incoming().diff(existing()).affectedKeys().hasOnly(['status', 'notes']);
+      allow delete: if isValidId(inquiryId) && isAdmin();
+    }
+
+    match /admins/{uid} {
+      allow get: if isValidId(uid) && isSignedIn() && (request.auth.uid == uid || isAdmin());
+      allow list: if isAdmin();
+      allow create, update: if isValidId(uid)
+        && isAdmin()
+        && incoming().keys().hasAll(['email', 'addedAt'])
+        && incoming().keys().hasOnly(['email', 'addedAt'])
+        && incoming().email is string && incoming().email.size() <= 120
+        && incoming().addedAt == request.time;
+      allow delete: if isValidId(uid) && isAdmin();
+    }
+  }
+}

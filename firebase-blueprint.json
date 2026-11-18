@@ -1,0 +1,346 @@
+{
+  "entities": {
+    "SiteConfig": {
+      "title": "SiteConfig",
+      "description": "Global site imagery, pricing base rate, hero copy, and venue contact settings for Nakreezay Shadi Hall.",
+      "type": "object",
+      "properties": {
+        "heroImageUrl": { "type": "string", "maxLength": 350000 },
+        "stageImageUrl": { "type": "string", "maxLength": 350000 },
+        "cateringImageUrl": { "type": "string", "maxLength": 350000 },
+        "avImageUrl": { "type": "string", "maxLength": 350000 },
+        "baseVenuePerHead": { "type": "number" },
+        "phoneDisplay": { "type": "string", "maxLength": 40 },
+        "phoneRaw": { "type": "string", "maxLength": 30 },
+        "whatsappNumber": { "type": "string", "maxLength": 30 },
+        "email": { "type": "string", "maxLength": 120 },
+        "addressEn": { "type": "string", "maxLength": 300 },
+        "addressUr": { "type": "string", "maxLength": 300 },
+        "visitingHoursEn": { "type": "string", "maxLength": 120 },
+        "visitingHoursUr": { "type": "string", "maxLength": 120 },
+        "fridayNoteEn": { "type": "string", "maxLength": 160 },
+        "fridayNoteUr": { "type": "string", "maxLength": 160 },
+        "heroHeadlineEn": { "type": "string", "maxLength": 200 },
+        "heroHeadlineUr": { "type": "string", "maxLength": 200 },
+        "heroSubheadlineEn": { "type": "string", "maxLength": 400 },
+        "heroSubheadlineUr": { "type": "string", "maxLength": 400 },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "heroImageUrl",
+        "stageImageUrl",
+        "cateringImageUrl",
+        "avImageUrl",
+        "baseVenuePerHead",
+        "phoneDisplay",
+        "phoneRaw",
+        "whatsappNumber",
+        "email",
+        "addressEn",
+        "addressUr",
+        "visitingHoursEn",
+        "visitingHoursUr",
+        "updatedAt"
+      ]
+    },
+    "WeddingPackage": {
+      "title": "WeddingPackage",
+      "description": "All-inclusive wedding package pricing tier.",
+      "type": "object",
+      "properties": {
+        "nameEn": { "type": "string", "maxLength": 100 },
+        "nameUr": { "type": "string", "maxLength": 120 },
+        "tierLabelEn": { "type": "string", "maxLength": 80 },
+        "tierLabelUr": { "type": "string", "maxLength": 100 },
+        "badgeEn": { "type": "string", "maxLength": 60 },
+        "badgeUr": { "type": "string", "maxLength": 80 },
+        "pricePerHead": { "type": "number" },
+        "hallFeeNoteEn": { "type": "string", "maxLength": 180 },
+        "hallFeeNoteUr": { "type": "string", "maxLength": 200 },
+        "descriptionEn": { "type": "string", "maxLength": 400 },
+        "descriptionUr": { "type": "string", "maxLength": 450 },
+        "highlighted": { "type": "boolean" },
+        "sortOrder": { "type": "number" },
+        "featuresEn": { "type": "array" },
+        "featuresUr": { "type": "array" },
+        "presetDishIds": { "type": "array" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "nameEn",
+        "nameUr",
+        "tierLabelEn",
+        "tierLabelUr",
+        "pricePerHead",
+        "hallFeeNoteEn",
+        "hallFeeNoteUr",
+        "descriptionEn",
+        "descriptionUr",
+        "highlighted",
+        "sortOrder",
+        "featuresEn",
+        "featuresUr",
+        "presetDishIds",
+        "updatedAt"
+      ]
+    },
+    "MenuDish": {
+      "title": "MenuDish",
+      "description": "Dish available in the Per-Head Menu Calculator.",
+      "type": "object",
+      "properties": {
+        "category": {
+          "type": "string",
+          "enum": ["rice", "curry", "bbq", "sides", "desserts", "drinks"]
+        },
+        "nameEn": { "type": "string", "maxLength": 100 },
+        "nameUr": { "type": "string", "maxLength": 120 },
+        "pricePerHead": { "type": "number" },
+        "noteEn": { "type": "string", "maxLength": 200 },
+        "noteUr": { "type": "string", "maxLength": 240 },
+        "sortOrder": { "type": "number" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "category",
+        "nameEn",
+        "nameUr",
+        "pricePerHead",
+        "noteEn",
+        "noteUr",
+        "sortOrder",
+        "updatedAt"
+      ]
+    },
+    "GalleryItem": {
+      "title": "GalleryItem",
+      "description": "Photo displayed in the Halls & Gallery masonry grid.",
+      "type": "object",
+      "properties": {
+        "category": {
+          "type": "string",
+          "enum": ["Barat Stages", "Walima Decor", "Mehndi Nights", "Dining Setup", "Exterior & Parking"]
+        },
+        "titleEn": { "type": "string", "maxLength": 120 },
+        "titleUr": { "type": "string", "maxLength": 150 },
+        "captionEn": { "type": "string", "maxLength": 300 },
+        "captionUr": { "type": "string", "maxLength": 350 },
+        "imageUrl": { "type": "string", "maxLength": 350000 },
+        "aspect": { "type": "string", "enum": ["tall", "wide", "square"] },
+        "sortOrder": { "type": "number" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "category",
+        "titleEn",
+        "titleUr",
+        "captionEn",
+        "captionUr",
+        "imageUrl",
+        "aspect",
+        "sortOrder",
+        "updatedAt"
+      ]
+    },
+    "VenueService": {
+      "title": "VenueService",
+      "description": "Banquet or event service displayed on Services and Home pages.",
+      "type": "object",
+      "properties": {
+        "number": { "type": "string", "maxLength": 10 },
+        "categoryEn": { "type": "string", "maxLength": 80 },
+        "categoryUr": { "type": "string", "maxLength": 100 },
+        "titleEn": { "type": "string", "maxLength": 120 },
+        "titleUr": { "type": "string", "maxLength": 140 },
+        "summaryEn": { "type": "string", "maxLength": 240 },
+        "summaryUr": { "type": "string", "maxLength": 280 },
+        "descriptionEn": { "type": "string", "maxLength": 600 },
+        "descriptionUr": { "type": "string", "maxLength": 700 },
+        "imageUrl": { "type": "string", "maxLength": 350000 },
+        "featuresEn": { "type": "array" },
+        "featuresUr": { "type": "array" },
+        "sortOrder": { "type": "number" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "number",
+        "categoryEn",
+        "categoryUr",
+        "titleEn",
+        "titleUr",
+        "summaryEn",
+        "summaryUr",
+        "descriptionEn",
+        "descriptionUr",
+        "imageUrl",
+        "featuresEn",
+        "featuresUr",
+        "sortOrder",
+        "updatedAt"
+      ]
+    },
+    "HallSpec": {
+      "title": "HallSpec",
+      "description": "Banquet hall specification row in the comparison table.",
+      "type": "object",
+      "properties": {
+        "nameEn": { "type": "string", "maxLength": 120 },
+        "nameUr": { "type": "string", "maxLength": 140 },
+        "areaSqFt": { "type": "string", "maxLength": 40 },
+        "banquetCapacity": { "type": "string", "maxLength": 40 },
+        "theaterCapacity": { "type": "string", "maxLength": 40 },
+        "bridalRoomEn": { "type": "string", "maxLength": 120 },
+        "bridalRoomUr": { "type": "string", "maxLength": 140 },
+        "climateControlEn": { "type": "string", "maxLength": 120 },
+        "climateControlUr": { "type": "string", "maxLength": 140 },
+        "notesEn": { "type": "string", "maxLength": 160 },
+        "notesUr": { "type": "string", "maxLength": 180 },
+        "sortOrder": { "type": "number" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "nameEn",
+        "nameUr",
+        "areaSqFt",
+        "banquetCapacity",
+        "theaterCapacity",
+        "bridalRoomEn",
+        "bridalRoomUr",
+        "climateControlEn",
+        "climateControlUr",
+        "notesEn",
+        "notesUr",
+        "sortOrder",
+        "updatedAt"
+      ]
+    },
+    "Testimonial": {
+      "title": "Testimonial",
+      "description": "Client review displayed on the home page.",
+      "type": "object",
+      "properties": {
+        "initials": { "type": "string", "maxLength": 6 },
+        "name": { "type": "string", "maxLength": 100 },
+        "locationEventEn": { "type": "string", "maxLength": 120 },
+        "locationEventUr": { "type": "string", "maxLength": 140 },
+        "quoteEn": { "type": "string", "maxLength": 600 },
+        "quoteUr": { "type": "string", "maxLength": 700 },
+        "sortOrder": { "type": "number" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "initials",
+        "name",
+        "locationEventEn",
+        "locationEventUr",
+        "quoteEn",
+        "quoteUr",
+        "sortOrder",
+        "updatedAt"
+      ]
+    },
+    "FaqItem": {
+      "title": "FaqItem",
+      "description": "Frequently asked question on the contact page.",
+      "type": "object",
+      "properties": {
+        "questionEn": { "type": "string", "maxLength": 240 },
+        "questionUr": { "type": "string", "maxLength": 280 },
+        "answerEn": { "type": "string", "maxLength": 700 },
+        "answerUr": { "type": "string", "maxLength": 800 },
+        "sortOrder": { "type": "number" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "questionEn",
+        "questionUr",
+        "answerEn",
+        "answerUr",
+        "sortOrder",
+        "updatedAt"
+      ]
+    },
+    "BookingInquiry": {
+      "title": "BookingInquiry",
+      "description": "Customer booking inquiry stored for admin management.",
+      "type": "object",
+      "properties": {
+        "fullName": { "type": "string", "maxLength": 120 },
+        "phone": { "type": "string", "maxLength": 40 },
+        "eventDate": { "type": "string", "maxLength": 20 },
+        "eventShift": { "type": "string", "enum": ["Day Lunch", "Night Dinner"] },
+        "eventType": { "type": "string", "maxLength": 40 },
+        "gentsCount": { "type": "number" },
+        "ladiesCount": { "type": "number" },
+        "catering": { "type": "string", "enum": ["Yes - Per Head", "No - Hall Only"] },
+        "notes": { "type": "string", "maxLength": 1000 },
+        "status": { "type": "string", "enum": ["pending", "confirmed", "completed", "cancelled"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "fullName",
+        "phone",
+        "eventDate",
+        "eventShift",
+        "eventType",
+        "gentsCount",
+        "ladiesCount",
+        "catering",
+        "status",
+        "createdAt"
+      ]
+    },
+    "AdminUser": {
+      "title": "AdminUser",
+      "description": "Authorized admin UID entry.",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string", "maxLength": 120 },
+        "addedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["email", "addedAt"]
+    }
+  },
+  "firestore": {
+    "/siteConfig/{configId}": {
+      "schema": { "$ref": "#/entities/SiteConfig" },
+      "description": "Global site imagery, base pricing, and venue contact settings."
+    },
+    "/packages/{packageId}": {
+      "schema": { "$ref": "#/entities/WeddingPackage" },
+      "description": "Wedding packages displayed on Home and Packages pages."
+    },
+    "/menuDishes/{dishId}": {
+      "schema": { "$ref": "#/entities/MenuDish" },
+      "description": "Menu dishes used in the Per-Head Menu Calculator."
+    },
+    "/galleryItems/{itemId}": {
+      "schema": { "$ref": "#/entities/GalleryItem" },
+      "description": "Masonry photo gallery items."
+    },
+    "/services/{serviceId}": {
+      "schema": { "$ref": "#/entities/VenueService" },
+      "description": "Banquet and event services."
+    },
+    "/hallSpecs/{hallId}": {
+      "schema": { "$ref": "#/entities/HallSpec" },
+      "description": "Hall specification comparison rows."
+    },
+    "/testimonials/{testimonialId}": {
+      "schema": { "$ref": "#/entities/Testimonial" },
+      "description": "Swat family testimonials."
+    },
+    "/faqs/{faqId}": {
+      "schema": { "$ref": "#/entities/FaqItem" },
+      "description": "Frequently asked questions."
+    },
+    "/inquiries/{inquiryId}": {
+      "schema": { "$ref": "#/entities/BookingInquiry" },
+      "description": "Visitor booking inquiries accessible only to admins."
+    },
+    "/admins/{uid}": {
+      "schema": { "$ref": "#/entities/AdminUser" },
+      "description": "Admin role allowlist."
+    }
+  }
+}
